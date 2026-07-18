@@ -245,7 +245,7 @@ Wait for output like:
   Dashboard: http://localhost:3030
   Contract:  089f…db
   Token:     c22…33
-  Vault:     10,000 SVT initialized
+  Vault:     9,700 SVT (10,000 - 300 funded)
   Alice:     👩‍💻 200 SVT funded (REAL on-chain tx)
   Bob:       🧑‍🔧 100 SVT funded (REAL on-chain tx)
 ```
@@ -262,12 +262,12 @@ Navigate to **http://localhost:3030** in your browser.
 
 | Element | What It Does |
 |---------|-------------|
-| **TVL** | Shows 10,000 SVT — public vault balance |
+| **TVL** | Live vault balance — changes with every transaction |
 | **Alice / Bob buttons** | Connect as that persona |
 | **Private balance** | Your balance — only visible to you 🔒 |
 | **Wallet balance** | Real on-chain SVT in the connected wallet |
 | **Withdraw** | Enter amount → click send → ZK proof → tokens arrive in your wallet |
-| **Deposit** | Enter amount → click add → validated on-chain → balance updates |
+| **Deposit** | Enter amount → click add → **mints tokens to vault on-chain** → private balance updates |
 | **Terminal log** | Transaction history (clears per persona for privacy) |
 | **Contract panel** | Live contract details from the Midnight indexer |
 | **Privacy model** | Explains how ZK keeps data private |
@@ -284,17 +284,19 @@ See the [Demo Video Script](#-demo-video-script) section below.
 
 | Time | Visual | Narration |
 |------|--------|-----------|
+| Time | Visual | Narration |
+|------|--------|-----------|
 | `0:00` | Dashboard loading → live | "Hi, I built **ShadowVault** for the **Midnight Hackathon**." |
-| `0:10` | TVL: 10,000 SVT visible | "This is a privacy-preserving DeFi vault. The TVL is public — **10,000 SVT**." |
+| `0:10` | TVL live (e.g. 9,700 SVT) | "This is a privacy-preserving DeFi vault. The TVL is **public** — everyone sees it. Individual balances are **private**." |
 | `0:20` | Click **Alice** | "Let me connect as **Alice**. I see my private balance: **200 SVT**. Only I can see this." |
-| `0:30` | Type "50" → click **deposit** | "I'll deposit 50. The `deposit` circuit validates this on-chain." |
-| `0:40` | Shows "deposited ✓" in terminal | "My balance updates to **250**. Nobody else knows." |
+| `0:30` | Type "50" → click **deposit** | "I'll deposit 50. The `deposit` circuit **mints 50 tokens to the vault** — my private balance updates to 250." |
+| `0:40` | Shows tx hash in terminal | "Here's the **transaction hash** — a real on-chain record." |
 | `0:50` | Type "30" → click **withdraw** | "Now I'll withdraw 30. This triggers the `withdraw` circuit — a **real ZK transaction**." |
-| `1:00` | Shows "withdrew 30 ✓" terminal | "A ZK proof is generated and submitted. **30 SVT arrives in my wallet on-chain**." |
+| `1:00` | Shows tx hash + balance update | "A ZK proof is generated and submitted. **30 SVT arrives in my wallet on-chain**. TVL drops." |
 | `1:10` | Click **disconnect → Bob** | "Now let's switch to **Bob**. Watch what he sees." |
-| `1:15` | Bob shows 100 SVT | "Bob sees **100 SVT**. He **cannot see Alice's 220**. They're both in the same vault but privacy is preserved." |
-| `1:25` | Hover over privacy panel | "Midnight's ZK makes this possible. The circuit proves transactions without revealing identity." |
-| `1:35` | Show code briefly | "Built with **Compact** — Midnight's ZK-native language. Deployed on local devnet." |
+| `1:15` | Bob shows 100 SVT | "Bob sees **100 SVT**. He **cannot see Alice's 220**. Same vault, different data." |
+| `1:25` | Hover over privacy panel | "Midnight's ZK makes this possible. The circuit proves validity without revealing identity." |
+| `1:35` | Show tx hash in terminal | "Every transaction has a verifiable on-chain hash — provably real." |
 | `1:45` | GitHub link visible | "Code is open source. Link below. **DeFi should be private.** " |
 | `1:55` | End screen | "Thanks for watching!" |
 
@@ -366,8 +368,9 @@ The project has been tested on a local devnet:
 ✅ Contract compiles (4 circuits)
 ✅ Contract deploys and initializes (10,000 SVT minted)
 ✅ fundUser sends REAL tokens to users (200 Alice, 100 Bob)
-✅ deposit circuit validates on-chain
-✅ withdraw circuit generates ZK proof, sends REAL tokens
+✅ deposit circuit mints new tokens to vault (REAL on-chain)
+✅ withdraw circuit generates ZK proof, sends REAL tokens to wallet
+✅ Transaction hashes shown for every on-chain action
 ✅ Persona switching preserves privacy (different balances)
 ✅ Dashboard auto-refreshes from Midnight indexer
 ```
@@ -406,7 +409,7 @@ curl -X POST http://localhost:3030/api/connect \
 
 If this were a production project:
 
-- [ ] **Real deposit transfers** — users send tokens to contract address, contract verifies receipt
+- [ ] **Wallet-to-contract transfers** — send tokens from user wallet to vault address (SDK limitation)
 - [ ] **Yield generation** — deposited tokens earn yield via lending/staking
 - [ ] **Multi-wallet support** — each user connects their own Lace wallet
 - [ ] **Persistent private state** — balances survive server restarts (LevelDB)
