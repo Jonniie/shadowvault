@@ -7,7 +7,7 @@
 ```
    🏆 Midnight Hackathon — DeFi Track
    📅 July 2026
-   👤 Solo entry
+   
 ```
 
 ---
@@ -22,7 +22,6 @@
 - [Prerequisites](#-prerequisites)
 - [Quick Start](#-quick-start)
 - [Usage](#-usage)
-- [Demo Video Script](#-demo-video-script)
 - [Project Structure](#-project-structure)
 - [Judging Criteria](#-judging-criteria)
 - [What's Next](#-whats-next)
@@ -274,40 +273,9 @@ Navigate to **http://localhost:3030** in your browser.
 
 ### Demo Flow (2-minute video)
 
-See the [Demo Video Script](#-demo-video-script) section below.
+Every transaction returns a verifiable on-chain transaction hash.
 
 ---
-
-## 🎬 Demo Video Script
-
-**Total time:** ~2 minutes
-
-| Time | Visual | Narration |
-|------|--------|-----------|
-| Time | Visual | Narration |
-|------|--------|-----------|
-| `0:00` | Dashboard loading → live | "Hi, I built **ShadowVault** for the **Midnight Hackathon**." |
-| `0:10` | TVL live (e.g. 9,700 SVT) | "This is a privacy-preserving DeFi vault. The TVL is **public** — everyone sees it. Individual balances are **private**." |
-| `0:20` | Click **Alice** | "Let me connect as **Alice**. I see my private balance: **200 SVT**. Only I can see this." |
-| `0:30` | Type "50" → click **deposit** | "I'll deposit 50. The `deposit` circuit **mints 50 tokens to the vault** — my private balance updates to 250." |
-| `0:40` | Shows tx hash in terminal | "Here's the **transaction hash** — a real on-chain record." |
-| `0:50` | Type "30" → click **withdraw** | "Now I'll withdraw 30. This triggers the `withdraw` circuit — a **real ZK transaction**." |
-| `1:00` | Shows tx hash + balance update | "A ZK proof is generated and submitted. **30 SVT arrives in my wallet on-chain**. TVL drops." |
-| `1:10` | Click **disconnect → Bob** | "Now let's switch to **Bob**. Watch what he sees." |
-| `1:15` | Bob shows 100 SVT | "Bob sees **100 SVT**. He **cannot see Alice's 220**. Same vault, different data." |
-| `1:25` | Hover over privacy panel | "Midnight's ZK makes this possible. The circuit proves validity without revealing identity." |
-| `1:35` | Show tx hash in terminal | "Every transaction has a verifiable on-chain hash — provably real." |
-| `1:45` | GitHub link visible | "Code is open source. Link below. **DeFi should be private.** " |
-| `1:55` | End screen | "Thanks for watching!" |
-
-### Video Requirements Checklist
-
-- [ ] **2 minutes or less**
-- [ ] States "Midnight Hackathon" at the start
-- [ ] Shows working functionality
-- [ ] Code in a **public repository**
-- [ ] Video remains public post-event
-- [ ] Created during the hackathon weekend
 
 ---
 
