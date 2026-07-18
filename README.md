@@ -7,7 +7,6 @@
 ```
    🏆 Midnight Hackathon — DeFi Track
    📅 July 2026
-   
 ```
 
 ---
@@ -162,7 +161,6 @@ Frontend       │ HTML/CSS/JS (vanilla, no framework)
 Devnet         │ Docker (midnight-local-dev)
 Proof Server   │ midnight-proof-server
 Database       │ LevelDB (wallet private state)
-Font           │ JetBrains Mono
 ```
 
 ### Key Packages
@@ -220,7 +218,7 @@ docker compose -f standalone.yml ps
 ### 2. Clone & Install
 
 ```bash
-git clone <your-repo-url> shadowvault
+git clone https://github.com/Jonniie/shadowvault.git shadowvault
 cd shadowvault
 npm install
 ```
