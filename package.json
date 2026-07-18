@@ -1,0 +1,34 @@
+{
+  "name": "shadowvault",
+  "version": "1.0.0",
+  "description": "ShadowVault - A privacy-preserving deposit vault on Midnight",
+  "type": "module",
+  "scripts": {
+    "compile": "compact compile contracts/shadow-vault.compact src/managed/shadow-vault",
+    "deploy:local": "MIDNIGHT_NETWORK=local npx tsx src/deploy.ts",
+    "setup": "npx tsx src/setup.ts",
+    "cli": "npx tsx src/cli.ts"
+  },
+  "dependencies": {
+    "@midnight-ntwrk/midnight-js-contracts": "4.1.1",
+    "@midnight-ntwrk/midnight-js-http-client-proof-provider": "4.1.1",
+    "@midnight-ntwrk/midnight-js-indexer-public-data-provider": "4.1.1",
+    "@midnight-ntwrk/midnight-js-level-private-state-provider": "4.1.1",
+    "@midnight-ntwrk/midnight-js-network-id": "4.1.1",
+    "@midnight-ntwrk/midnight-js-node-zk-config-provider": "4.1.1",
+    "@midnight-ntwrk/midnight-js-protocol": "4.1.1",
+    "@midnight-ntwrk/midnight-js-types": "4.1.1",
+    "@midnight-ntwrk/midnight-js-utils": "4.1.1",
+    "@midnight-ntwrk/testkit-js": "4.1.1",
+    "@midnight-ntwrk/wallet-sdk": "1.0.0",
+    "pino": "10.3.1",
+    "pino-pretty": "13.1.3",
+    "rxjs": "7.8.2",
+    "ws": "8.21.0",
+    "inquirer": "12.4.2"
+  },
+  "devDependencies": {
+    "tsx": "4.22.4",
+    "typescript": "5.7.3"
+  }
+}

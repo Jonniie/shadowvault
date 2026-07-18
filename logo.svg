@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00ff88"/>
+      <stop offset="100%" stop-color="#00cc66"/>
+    </linearGradient>
+  </defs>
+  <!-- Shield shape -->
+  <path d="M50 8 L85 25 L85 55 Q85 75 50 92 Q15 75 15 55 L15 25 Z"
+        fill="none" stroke="url(#g)" stroke-width="3"/>
+  <!-- Lock icon -->
+  <rect x="38" y="45" width="24" height="18" rx="3" fill="none" stroke="url(#g)" stroke-width="2.5"/>
+  <path d="M42 45 L42 38 Q42 32 50 32 Q58 32 58 38 L58 45"
+        fill="none" stroke="url(#g)" stroke-width="2.5"/>
+  <!-- Inner S letter -->
+  <text x="50" y="44" text-anchor="middle" fill="url(#g)" font-family="monospace" font-size="22" font-weight="bold">S</text>
+</svg>

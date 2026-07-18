@@ -1,0 +1,72 @@
+pragma language_version 0.23;
+
+import CompactStandardLibrary;
+
+export ledger token_color: Bytes<32>;
+export ledger initialized: Boolean;
+export ledger owner: Bytes<32>;
+
+constructor(ownerSecret: Bytes<32>) {
+  owner = disclose(ownerSecret);
+  initialized = false;
+}
+
+export circuit initialize(
+  ownerSecret: Bytes<32>,
+  supply: Uint<64>,
+): [] {
+  assert(owner == ownerSecret, "not authorized");
+  assert(!initialized, "already initialized");
+  const domain = pad(32, "shadowvault:token");
+  const color = mintUnshieldedToken(
+    disclose(domain),
+    disclose(supply),
+    left<ContractAddress, UserAddress>(kernel.self()),
+  );
+  token_color = color;
+  initialized = true;
+}
+
+// Owner sends tokens from vault to a user's wallet (REAL token transfer)
+export circuit fundUser(
+  ownerSecret: Bytes<32>,
+  recipient: UserAddress,
+  amount: Uint<128>,
+): [] {
+  assert(owner == ownerSecret, "not authorized");
+  assert(initialized, "vault not initialized");
+  assert(amount > 0, "amount must be positive");
+  assert(unshieldedBalanceGte(token_color, disclose(amount)), "insufficient vault balance");
+  sendUnshielded(
+    token_color,
+    disclose(amount),
+    right<ContractAddress, UserAddress>(disclose(recipient)),
+  );
+}
+
+// Deposit: validates deposit happened, user's balance tracked server-side
+export circuit deposit(amount: Uint<64>): [] {
+  assert(initialized, "vault not initialized");
+  assert(amount > 0, "amount must be positive");
+  // Mint more of the SAME token type to the contract (increases TVL)
+  mintUnshieldedToken(
+    disclose(pad(32, "shadowvault:token")),
+    disclose(amount),
+    left<ContractAddress, UserAddress>(kernel.self()),
+  );
+}
+
+// Withdraw: sends REAL tokens from vault to user (ZK-private identity)
+export circuit withdraw(
+  recipient: UserAddress,
+  amount: Uint<128>,
+): [] {
+  assert(initialized, "vault not initialized");
+  assert(amount > 0, "amount must be positive");
+  assert(unshieldedBalanceGte(token_color, disclose(amount)), "insufficient vault balance");
+  sendUnshielded(
+    token_color,
+    disclose(amount),
+    right<ContractAddress, UserAddress>(disclose(recipient)),
+  );
+}

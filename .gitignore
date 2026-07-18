@@ -1,0 +1,7 @@
+node_modules/
+midnight-level-db/
+/tmp/
+*.log
+.env
+.DS_Store
+*.swp

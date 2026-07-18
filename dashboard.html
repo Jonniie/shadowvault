@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>shadowvault · midnight</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 8 L85 25 L85 55 Q85 75 50 92 Q15 75 15 55 L15 25 Z' fill='none' stroke='%2300ff88' stroke-width='5'/%3E%3Crect x='38' y='45' width='24' height='18' rx='3' fill='none' stroke='%2300ff88' stroke-width='4'/%3E%3Cpath d='M42 45 L42 38 Q42 32 50 32 Q58 32 58 38 L58 45' fill='none' stroke='%2300ff88' stroke-width='4'/%3E%3C/svg%3E">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#000;--bg-card:#080808;--border:#1a1a1a;--border-light:#2a2a2a;--text:#eee;--text-dim:#888;--text-muted:#555;--accent:#00ff88;--accent-dim:rgba(0,255,136,.12);--red:#ff3355;--yellow:#ffbb33;--cyan:#3dd;--font:'JetBrains Mono',monospace;--radius:6px}
+    html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;font-size:14px}
+    body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E")}
+    #app{height:100vh;display:flex;flex-direction:column;padding:12px 20px;gap:8px;position:relative;z-index:1;max-width:1060px;margin:0 auto;width:100%}
+    .topbar{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;padding-bottom:8px;border-bottom:1px solid var(--border)}
+    .topbar-left{display:flex;align-items:center;gap:12px}
+    .logo-mark{width:26px;height:26px;border:2px solid var(--accent);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--accent);font-weight:700;flex-shrink:0}
+    .logo-text{font-size:15px;font-weight:600;letter-spacing:-.3px}
+    .logo-text span{color:var(--text-dim);font-weight:300}
+    .topbar-right{display:flex;align-items:center;gap:10px}
+    .net-badge{font-size:11px;padding:3px 10px;border:1px solid var(--border);border-radius:4px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.6px}
+    .status{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-dim)}
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s ease-in-out infinite;flex-shrink:0}
+    .dot.off{background:var(--red);animation:none}
+    @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,255,136,.4)}50%{opacity:.6;box-shadow:0 0 0 4px rgba(0,255,136,0)}}
+    
+    /* ─── CONNECT WALLET BAR ─── */
+    .connect-bar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-card);gap:12px}
+    .connect-bar-left{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+    .connect-label{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);font-weight:500;flex-shrink:0}
+    .persona-btn{padding:5px 14px;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--text-dim);font-family:var(--font);font-size:12px;cursor:pointer;transition:all .15s;font-weight:500}
+    .persona-btn:hover{border-color:var(--text-dim);color:var(--text)}
+    .persona-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+    .persona-btn .emoji{margin-right:5px}
+    .wallet-info{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-dim)}
+    .wallet-info .priv-bal{color:var(--accent);font-weight:700;font-size:18px}
+    .wallet-info .priv-label{color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+    .disconnect-btn{padding:4px 10px;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--text-muted);font-family:var(--font);font-size:11px;cursor:pointer;transition:all .15s}
+    .disconnect-btn:hover{border-color:var(--red);color:var(--red)}
+    .connect-prompt{font-size:13px;color:var(--text-muted);font-weight:300}
+
+    /* ─── MAIN GRID ─── */
+    .main-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-height:0}
+    .col{display:flex;flex-direction:column;gap:8px;min-height:0}
+
+    /* ─── TVL ─── */
+    .tvl-card{flex-shrink:0;padding:8px 16px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-card);display:flex;align-items:center;justify-content:space-between}
+    .tvl-label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);font-weight:500;margin-bottom:2px}
+    .tvl-number{font-size:30px;font-weight:300;letter-spacing:-1.5px;line-height:1;color:var(--text)}
+    .tvl-number .u{font-size:14px;color:var(--text-dim);font-weight:300}
+    .tvl-sub{font-size:11px;color:var(--text-dim)}
+    .tvl-sub .hl{color:var(--accent)}
+
+    /* ─── PANEL ─── */
+    .panel{border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-card);display:flex;flex-direction:column;overflow:hidden;flex:1;min-height:0}
+    .panel-head{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;border-bottom:1px solid var(--border);background:#030303;flex-shrink:0}
+    .panel-title{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);font-weight:500}
+    .panel-title .a{color:var(--accent);margin-right:4px}
+    .panel-body{padding:8px 14px;overflow-y:auto;flex:1;min-height:0}
+    .panel-body::-webkit-scrollbar{width:4px}
+    .panel-body::-webkit-scrollbar-track{background:transparent}
+    .panel-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+    .ir{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,.025)}
+    .ir:last-child{border-bottom:none}
+    .ik{color:var(--text-dim);font-weight:300}
+    .ik .p{color:var(--text-muted);margin-right:3px}
+    .iv{font-weight:400;color:var(--text);max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right}
+    .iv.h{font-size:11px;color:var(--text-dim)}
+    .iv.g{color:var(--accent)}
+
+    /* ─── ADMIN ─── */
+    .admin-row{display:flex;gap:8px;align-items:center}
+    .admin-row input{flex:1;padding:8px 12px;background:#000;border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;min-width:0}
+    .admin-row input:focus{border-color:var(--accent)}
+    .admin-row button{padding:8px 18px;background:transparent;border:1px solid var(--border);border-radius:4px;color:var(--text-dim);font-family:var(--font);font-size:13px;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;font-weight:500}
+    .admin-row button.wd{border-color:var(--accent);color:var(--accent)}
+    .admin-row button.wd:hover:not(:disabled){background:var(--accent-dim)}
+    .admin-row button.dp{border-color:var(--yellow);color:var(--yellow)}
+    .admin-row button.dp:hover:not(:disabled){background:rgba(255,187,51,.1)}
+    .admin-row button:disabled{opacity:.3;cursor:not-allowed}
+    .admin-result{margin-top:6px;font-size:12px;color:var(--text-dim);min-height:18px;line-height:1.4}
+    .admin-result .ok{color:var(--accent)}
+    .admin-result .err{color:var(--red)}
+
+    /* ─── TERMINAL ─── */
+    .term-body{padding:4px 14px;font-size:12px;line-height:1.7;overflow-y:auto;flex:1;min-height:0;font-weight:300}
+    .term-body::-webkit-scrollbar{width:4px}
+    .term-body::-webkit-scrollbar-track{background:transparent}
+    .term-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+    .ll{display:flex;gap:8px;opacity:0;animation:lf .25s ease forwards;padding:1px 0}
+    .ll.n{opacity:1}
+    @keyframes lf{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+    .lt{color:var(--text-muted);flex-shrink:0;font-size:11px;min-width:55px}
+    .llv{flex-shrink:0;min-width:32px;font-size:11px;font-weight:600;text-transform:uppercase}
+    .llv.i{color:var(--cyan)}.llv.ok{color:var(--accent)}.llv.w{color:var(--yellow)}.llv.e{color:var(--red)}
+    .lm{color:var(--text-dim);font-weight:300;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .lm strong{color:var(--text);font-weight:500}
+    .cursor{display:inline-block;width:7px;height:15px;background:var(--accent);animation:bl 1s step-end infinite;vertical-align:middle;margin-left:2px}
+    @keyframes bl{0%,100%{opacity:1}50%{opacity:0}}
+
+    /* ─── PRIVACY BAR ─── */
+    .privacy-bar{flex-shrink:0;display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--border)}
+    .privacy-bar>div{background:#040404;padding:6px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+    .pb-icon{font-size:11px;line-height:1}
+    .pb-label{font-size:7px;text-transform:uppercase;letter-spacing:.7px;color:var(--text-dim);font-weight:500}
+    .pb-desc{font-size:8px;color:var(--text-muted);font-weight:300;line-height:1.2}
+
+    /* ─── LOADING / ERROR ─── */
+    .loading-state{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+    .loading-ticks{font-size:11px;color:var(--text-dim);font-weight:300;line-height:1.9}
+    .loading-ticks .tk{opacity:0;animation:tki .4s ease forwards}
+    .loading-ticks .tk:nth-child(1){animation-delay:0s}
+    .loading-ticks .tk:nth-child(2){animation-delay:.25s}
+    .loading-ticks .tk:nth-child(3){animation-delay:.5s}
+    .loading-ticks .tk:nth-child(4){animation-delay:.75s}
+    @keyframes tki{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+    .spin{display:inline-block;width:9px;height:9px;border:1.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:5px}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    .err-state{text-align:center;padding:60px 24px}
+    .err-state .e-icon{font-size:26px;margin-bottom:10px}
+    .err-state .e-msg{font-size:11px;color:var(--text-dim);font-weight:300}
+    .err-state .e-msg .e-code{color:var(--red)}
+    .err-state button{margin-top:10px;padding:5px 14px;background:transparent;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);font-family:var(--font);font-size:10px;cursor:pointer}
+    .err-state button:hover{border-color:var(--accent);color:var(--accent)}
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- LOADING -->
+  <div class="loading-state" id="loading">
+    <div class="loading-ticks">
+      <div class="tk"><span class="spin"></span>connecting to indexer</div>
+      <div class="tk">resolving contract <span id="lAddr">…</span></div>
+      <div class="tk">decoding ledger state</div>
+      <div class="tk">ready</div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dash" style="display:none;flex-direction:column;height:100vh;padding:14px 20px;gap:10px;">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="logo-mark">
+          <svg width="18" height="18" viewBox="0 0 100 100">
+            <path d="M50 8 L85 25 L85 55 Q85 75 50 92 Q15 75 15 55 L15 25 Z" fill="none" stroke="currentColor" stroke-width="5"/>
+            <rect x="38" y="45" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="4"/>
+            <path d="M42 45 L42 38 Q42 32 50 32 Q58 32 58 38 L58 45" fill="none" stroke="currentColor" stroke-width="4"/>
+          </svg>
+        </div>
+        <div class="logo-text">shadowvault <span>/ midnight</span></div>
+      </div>
+      <div class="topbar-right">
+        <div class="status"><span class="dot" id="sd"></span><span id="st">connecting</span></div>
+        <div class="net-badge">local devnet</div>
+      </div>
+    </div>
+
+    <!-- TVL -->
+    <div class="tvl-card">
+      <div><div class="tvl-label">Total Value Locked (public)</div><div class="tvl-number" id="tvl">— <span class="u">SVT</span></div></div>
+      <div style="text-align:right"><div class="tvl-sub" id="tvlStatus">…</div><div class="tvl-sub" style="margin-top:1px"><span class="hl" id="addrShort">…</span></div></div>
+    </div>
+
+    <!-- Connect Wallet Bar -->
+    <div class="connect-bar" id="connectBar">
+      <div class="connect-bar-left">
+        <span class="connect-label">wallet</span>
+        <div id="walletNotConnected">
+          <span class="connect-prompt">→ connect to see your private balance</span>
+        </div>
+        <div id="walletConnected" style="display:none;flex-direction:column;gap:2px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="wallet-info">
+              <span id="personaEmoji"></span>
+              <span id="personaName" style="color:var(--text);font-weight:500"></span>
+              <span class="priv-label">private bal</span>
+              <span class="priv-bal" id="personaBalance">0</span>
+              <span style="color:var(--text-dim);font-size:10px">SVT</span>
+              <span style="font-size:8px;color:var(--text-muted);font-weight:300">🔒 only you</span>
+            </span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim)">
+            <span style="padding:1px 6px;border:1px solid var(--border);border-radius:3px;font-size:9px;color:var(--accent);text-transform:uppercase;font-weight:500">wallet</span>
+            <span>real balance: </span>
+            <span id="walletRealBalance" style="color:var(--text);font-weight:600">0</span>
+            <span>SVT</span>
+            <span style="color:var(--text-muted)">· on-chain</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center" id="connectActions">
+        <button class="persona-btn" data-persona="alice"><span class="emoji">👩‍💻</span>Alice</button>
+        <button class="persona-btn" data-persona="bob"><span class="emoji">🧑‍🔧</span>Bob</button>
+        <button class="disconnect-btn" id="disconnectBtn" style="display:none">disconnect</button>
+      </div>
+    </div>
+
+    <!-- Main grid -->
+    <div class="main-grid">
+      <!-- LEFT -->
+      <div class="col">
+        <!-- Left column: full info panel (contract + privacy) -->
+        <div class="panel" style="flex:0 0 auto">
+          <div class="panel-head"><div class="panel-title"><span class="a">▸</span>contract</div></div>
+          <div class="panel-body" style="padding:4px 12px">
+            <div class="ir"><span class="ik"><span class="p">$</span>address</span><span class="iv h" id="cAddr">—</span></div>
+            <div class="ir"><span class="ik"><span class="p">$</span>token</span><span class="iv h" id="cToken">—</span></div>
+            <div class="ir"><span class="ik"><span class="p">$</span>owner</span><span class="iv h" id="cOwner">—</span></div>
+            <div class="ir"><span class="ik"><span class="p">$</span>status</span><span class="iv g" id="cStatus">—</span></div>
+          </div>
+        </div>
+        <!-- Privacy fills the rest of the left column -->
+        <div class="panel" style="flex:1">
+          <div class="panel-head"><div class="panel-title"><span class="a">▸</span>privacy model</div></div>
+          <div class="panel-body" style="padding:10px 14px;line-height:1.9">
+            <div style="margin-bottom:14px">
+              <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">How it works</div>
+              <div style="font-size:13px;color:var(--text-dim);font-weight:300">
+                <div>✓ individual balances are <span style="color:var(--text)">ZK-private</span></div>
+                <div>✓ deposits &nbsp;&amp; withdrawals are <span style="color:var(--text)">anonymous</span></div>
+                <div>✓ only aggregate TVL is <span style="color:var(--text)">on-chain</span></div>
+              </div>
+            </div>
+
+            <div style="margin-bottom:14px">
+              <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">Circuit detail</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div class="ir"><span class="ik"><span class="p">$</span>initialize</span><span class="iv" style="font-size:11px;color:var(--cyan)">mint 10,000 SVT to vault</span></div>
+                <div class="ir"><span class="ik"><span class="p">$</span>fundUser</span><span class="iv" style="font-size:11px;color:var(--cyan)">owner sends REAL tokens to user</span></div>
+                <div class="ir"><span class="ik"><span class="p">$</span>deposit</span><span class="iv" style="font-size:11px;color:var(--cyan)">validates deposit, balance private</span></div>
+                <div class="ir"><span class="ik"><span class="p">$</span>withdraw</span><span class="iv" style="font-size:11px;color:var(--cyan)">ZK proof → REAL tokens to wallet</span></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">Network</div>
+              <div class="ir"><span class="ik"><span class="p">$</span>name</span><span class="iv" style="font-size:11px">undeployed (local devnet)</span></div>
+              <div class="ir"><span class="ik"><span class="p">$</span>chain</span><span class="iv" style="font-size:11px">Midnight L1</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="col">
+        <!-- ACTIONS: main container, takes most space -->
+        <div class="panel" style="flex:1">
+          <div class="panel-head">
+            <div class="panel-title"><span class="a">▸</span>actions <span id="actionPersona" style="color:var(--text-muted);font-weight:300;text-transform:none;letter-spacing:0"></span></div>
+          </div>
+          <div class="panel-body" id="actionPanelBody" style="padding:10px 14px;display:flex;flex-direction:column;justify-content:center;">
+            <div id="actionsLocked" style="text-align:center;padding:24px 0;">
+              <div style="font-size:15px;color:var(--text-muted);margin-bottom:8px">🔒 connect wallet to transact</div>
+              <div style="font-size:12px;color:var(--text-muted);font-weight:300">your identity stays ZK-private</div>
+            </div>
+            <div id="actionsUnlocked" style="display:none;max-width:380px;margin:0 auto;width:100%">
+              <div style="margin-bottom:20px">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+                  <span style="font-size:13px;color:var(--accent);font-weight:600;min-width:80px">withdraw</span>
+                  <span style="font-size:11px;color:var(--text-muted)">vault → your wallet</span>
+                </div>
+                <div class="admin-row">
+                  <input type="number" id="wdAmt" value="10" min="1" style="padding:8px 10px;font-size:13px">
+                  <button class="wd" id="wdBtn" style="padding:8px 20px;font-size:12px">→ send</button>
+                </div>
+                <div id="wdRes" class="admin-result" style="font-size:10px;min-height:16px"></div>
+              </div>
+              <div>
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+                  <span style="font-size:13px;color:var(--yellow);font-weight:600;min-width:80px">deposit</span>
+                  <span style="font-size:11px;color:var(--text-muted)">your wallet → vault validates</span>
+                </div>
+                <div class="admin-row">
+                  <input type="number" id="dpAmt" value="10" min="1" style="padding:8px 10px;font-size:13px">
+                  <button class="dp" id="dpBtn" style="padding:8px 20px;font-size:12px">→ add</button>
+                </div>
+                <div id="dpRes" class="admin-result" style="font-size:10px;min-height:16px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TX LOG: reduced height, auto-scrolls to latest -->
+        <div class="panel" style="flex:0 0 auto;max-height:140px">
+          <div class="panel-head">
+            <div class="panel-title"><span class="a">▸</span>tx log</div>
+            <div style="display:flex;gap:4px"><span style="width:4px;height:4px;border-radius:50%;background:var(--red)"></span><span style="width:4px;height:4px;border-radius:50%;background:var(--yellow)"></span><span style="width:4px;height:4px;border-radius:50%;background:var(--accent)"></span></div>
+          </div>
+          <div class="term-body" id="term" style="max-height:95px">
+            <div class="ll n"><span class="lt">—:—:—</span><span class="llv i">--</span><span class="lm">connecting…<span class="cursor"></span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy bar -->
+    <div class="privacy-bar" style="padding:2px 0">
+      <div><span class="pb-label" style="font-size:9px">ZK Circuit</span><span class="pb-desc" style="font-size:10px">withdraw() hides identity</span></div>
+      <div><span class="pb-label" style="font-size:9px">Public</span><span class="pb-desc" style="font-size:10px">aggregate TVL only</span></div>
+      <div><span class="pb-label" style="font-size:9px">Private</span><span class="pb-desc" style="font-size:10px">balances via ZK proof</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API='/api/state';
+function sn(s,n=6){if(!s||s.length<n*2+4)return s||'—';return s.slice(0,n)+'…'+s.slice(-4)}
+function ft(d){return new Date(d).toLocaleTimeString('en-GB',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'})}
+const $=id=>document.getElementById(id);
+const loading=$('loading'),dash=$('dash'),sd=$('sd'),st=$('st'),term=$('term');
+
+function setActionsBusy(busy){
+  $('wdBtn').disabled=busy;
+  $('dpBtn').disabled=busy;
+  $('wdAmt').disabled=busy;
+  $('dpAmt').disabled=busy;
+  if(busy){
+    $('wdBtn').textContent='→ …';
+    $('dpBtn').textContent='→ …';
+  }else{
+    $('wdBtn').textContent='→ send';
+    $('dpBtn').textContent='→ add';
+  }
+}
+function pushLog(lvl,msg,time){
+  // Remove the initial "connecting..." placeholder on first real log
+  const placeholder=term.querySelector('.ll .cursor');
+  if(placeholder){
+    const parent=placeholder.closest('.ll');
+    if(parent)parent.remove();
+  }
+  const line=document.createElement('div');line.className='ll n';
+  line.innerHTML=`<span class="lt">${time||ft(new Date())}</span><span class="llv ${lvl}">${lvl}</span><span class="lm">${msg}</span>`;
+  term.appendChild(line);
+  term.scrollTop=term.scrollHeight;
+}
+function setStatus(on){sd.className='dot'+(on?'':' off');st.textContent=on?'live':'offline'}
+async function fetchState(){const r=await fetch(API);if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json()}
+
+let currentPersona=null;
+
+function render(d){
+  document.title=`shadowvault · ${sn(d.contract_address,4)}`;
+  $('addrShort').textContent=sn(d.contract_address,4);
+  const tvlVal=d.tvl?Number(d.tvl).toLocaleString():'—';
+  $('tvl').innerHTML=`${tvlVal} <span class="u">SVT</span>`;
+  $('tvlStatus').textContent=d.state.initialized?'initialized':'pending';
+  $('cAddr').textContent=d.contract_address;
+  $('cToken').textContent=sn(d.state.token_color,8);
+  $('cOwner').textContent=sn(d.state.owner,8);
+  $('cStatus').textContent='● live';
+  setStatus(true);
+
+  // Update persona if connected
+  if(d.persona){
+    currentPersona=d.persona;
+    $('personaEmoji').textContent=d.persona.emoji;
+    $('personaName').textContent=d.persona.name;
+    $('personaBalance').textContent=Number(d.persona.balance).toLocaleString();
+    $('walletRealBalance').textContent=Number(d.wallet_balance).toLocaleString();
+    $('walletNotConnected').style.display='none';
+    $('walletConnected').style.display='flex';
+    $('disconnectBtn').style.display='block';
+    $('actionsLocked').style.display='none';
+    $('actionsUnlocked').style.display='block';
+    $('actionPersona').textContent=`· ${d.persona.emoji} ${d.persona.name}`;
+  }
+}
+
+// ─── Connect / Disconnect ───
+document.querySelectorAll('.persona-btn').forEach(btn=>{
+  btn.addEventListener('click',async()=>{
+    const persona=btn.dataset.persona;
+    document.querySelectorAll('.persona-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    try{
+      const r=await fetch('/api/connect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({persona})});
+      const d=await r.json();
+      if(d.status==='ok'){
+        // Clear all persona-specific UI — privacy first
+        term.innerHTML='';
+        $('wdRes').innerHTML='';
+        $('dpRes').innerHTML='';
+        render({...await fetchState(),persona:d.persona});
+        pushLog('ok',`${d.persona.emoji} <strong>${d.persona.name}</strong> connected · balance: <strong>${Number(d.persona.balance).toLocaleString()} SVT</strong> (private 🔒)`);
+      }
+    }catch(e){pushLog('e',`connect failed · ${e.message}`)}
+  });
+});
+
+$('disconnectBtn').addEventListener('click',async()=>{
+  await fetch('/api/disconnect',{method:'POST'});
+  currentPersona=null;
+  document.querySelectorAll('.persona-btn').forEach(b=>b.classList.remove('active'));
+  $('walletNotConnected').style.display='flex';
+  $('walletConnected').style.display='none';
+  $('disconnectBtn').style.display='none';
+  $('actionsLocked').style.display='block';
+  $('actionsUnlocked').style.display='none';
+  $('actionPersona').textContent='';
+  // Clear all persona-specific UI — privacy first
+  term.innerHTML='';
+  $('wdRes').innerHTML='';
+  $('dpRes').innerHTML='';
+  pushLog('info','disconnected · session cleared');
+});
+
+// ─── Withdraw ───
+$('wdBtn').addEventListener('click',async()=>{
+  const res=$('wdRes'),amt=$('wdAmt').value;
+  setActionsBusy(true);res.innerHTML='<span style="color:var(--yellow)">⟳ submitting...</span>';
+  try{
+    const r=await fetch('/api/withdraw',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount:parseInt(amt)})});
+    const d=await r.json();
+    if(d.status==='ok'){
+      res.innerHTML=`<span class="ok">✓ ${d.message}</span>`;
+      pushLog('ok',`${currentPersona?.emoji||''} withdrew <strong>${amt} SVT</strong> · balance: <strong>${Number(d.balance).toLocaleString()} SVT</strong>${d.txId?` · <span class="hl">tx:${d.txId.slice(0,14)}…</span>`:''}`);
+      setTimeout(async()=>{try{render(await fetchState())}catch(e){}},1000);
+    }else{res.innerHTML=`<span class="err">✗ ${d.error}</span>`;pushLog('e',`withdraw failed · ${d.error}`)}
+  }catch(e){res.innerHTML=`<span class="err">✗ ${e.message}</span>`}
+  setActionsBusy(false);
+});
+
+// ─── Deposit ───
+$('dpBtn').addEventListener('click',async()=>{
+  const res=$('dpRes'),amt=$('dpAmt').value;
+  setActionsBusy(true);res.innerHTML='<span style="color:var(--yellow)">⟳ submitting...</span>';
+  try{
+    const r=await fetch('/api/deposit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount:parseInt(amt)})});
+    const d=await r.json();
+    if(d.status==='ok'){
+      res.innerHTML=`<span class="ok">✓ ${d.message}</span>`;
+      pushLog('ok',`${currentPersona?.emoji||''} deposited <strong>${amt} SVT</strong> · balance: <strong>${Number(d.balance).toLocaleString()} SVT</strong>${d.txId?` · <span class="hl">tx:${d.txId.slice(0,14)}…</span>`:''}`);
+      setTimeout(async()=>{try{render(await fetchState())}catch(e){}},1000);
+    }else{res.innerHTML=`<span class="err">✗ ${d.error}</span>`;pushLog('e',`deposit failed · ${d.error}`)}
+  }catch(e){res.innerHTML=`<span class="err">✗ ${e.message}</span>`}
+  setActionsBusy(false);
+});
+
+// ─── Init ───
+(async()=>{
+  $('lAddr').textContent=sn('…',4);
+  await new Promise(r=>setTimeout(r,800));
+  try{
+    const d=await fetchState();
+    loading.style.display='none';dash.style.display='flex';
+    render(d);
+    pushLog('ok','dashboard live');
+  }catch(e){
+    loading.innerHTML=`<div class="err-state"><div class="e-icon">⚠</div><div class="e-msg">connection failed<br><span class="e-code">${e.message}</span></div><button onclick="location.reload()">reconnect</button></div>`;
+    setStatus(false);
+  }
+})();
+
+setInterval(async()=>{try{render(await fetchState())}catch(e){}},20000);
+</script>
+</body>
+</html>
