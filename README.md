@@ -27,6 +27,9 @@
 
 ---
 
+<img width="2189" height="1850" alt="shadow vault dashboard" src="https://github.com/user-attachments/assets/c5ed953a-1ea0-4cb9-bfb1-c34a9401224a" />
+
+
 ## 🎯 The Pitch
 
 **Problem:** Every DeFi protocol today (Aave, Compound, Uniswap) exposes every transaction on a public ledger. Your deposits, withdrawals, wallet balances — all visible. Whales get front-run. Trading strategies are copied. Privacy doesn't exist.
@@ -270,6 +273,7 @@ Navigate to **http://localhost:3030** in your browser.
 | **Privacy model** | Explains how ZK keeps data private |
 
 ### Demo Flow (2-minute video)
+[Demo](https://youtu.be/79GmTu2eHoE?si=ESh9E1f2nGE8leQR)
 
 Every transaction returns a verifiable on-chain transaction hash.
 
@@ -396,6 +400,6 @@ If this were a production project:
 
 **Built with 🔒 for the Midnight Hackathon**
 
-[Devpost Submission](https://midnight-hackathon-july-2026.devpost.com/)
+[Devpost Submission](https://devpost.com/software/shadow-vault)
 
 </div>
