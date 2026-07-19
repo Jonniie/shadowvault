@@ -9,24 +9,6 @@
    📅 July 2026
 ```
 
----
-
-## 📋 Table of Contents
-
-- [The Pitch](#-the-pitch)
-- [How It Works](#-how-it-works)
-- [Smart Contract Architecture](#-smart-contract-architecture)
-- [Privacy Model](#-privacy-model)
-- [Tech Stack](#-tech-stack)
-- [Prerequisites](#-prerequisites)
-- [Quick Start](#-quick-start)
-- [Usage](#-usage)
-- [Project Structure](#-project-structure)
-- [Judging Criteria](#-judging-criteria)
-- [What's Next](#-whats-next)
-
----
-
 <img width="2189" height="1850" alt="shadow vault dashboard" src="https://github.com/user-attachments/assets/c5ed953a-1ea0-4cb9-bfb1-c34a9401224a" />
 
 
